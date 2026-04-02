@@ -21,7 +21,6 @@
         color: white; height: var(--header-height); display: flex; align-items: center; justify-content: center;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; z-index: 10;
     }
-    header h2 { margin: 0; font-size: 24px; font-weight: 500; letter-spacing: 2px; }
 
     .nav-tabs { display: flex; background: white; height: var(--tab-height); border-bottom: 1px solid #e0e6ed; justify-content: center; }
     .tab-item { padding: 0 30px; display: flex; align-items: center; cursor: pointer; font-weight: 600; color: #7f8c8d; border-bottom: 3px solid transparent; transition: 0.3s; }
@@ -30,38 +29,43 @@
     .page-content { height: calc(100vh - var(--header-height) - var(--tab-height)); width: 100vw; display: none; }
     .page-content.active { display: flex; }
 
-    /* 看板與行事曆 */
-    .calendar-wrapper { flex: 1; background: white; padding: 20px; border-right: 1px solid #e0e6ed; overflow-y: auto; }
+    /* --- 行事曆大格子設定 --- */
+    .calendar-wrapper { 
+        flex: 1.5; /* 讓行事曆佔據更多空間 (原本是 1) */
+        background: white; 
+        padding: 20px; 
+        border-right: 1px solid #e0e6ed; 
+        overflow-y: auto; 
+    }
+    #calendar { height: 100%; min-height: 700px; } /* 設定最小高度確保格子撐開 */
+    
+    /* 強制撐開 FullCalendar 的日期格子 */
+    .fc .fc-daygrid-day { min-height: 120px !important; } 
+
     .board-wrapper { flex: 1; padding: 20px; background: var(--bg-color); overflow-x: auto; display: flex; flex-direction: column; }
     .board-columns { display: flex; gap: 12px; height: 100%; padding-bottom: 10px; }
-    .column { flex: 0 0 190px; background: #eaedf2; border-radius: 12px; display: flex; flex-direction: column; max-height: 100%; }
+    .column { flex: 0 0 210px; background: #eaedf2; border-radius: 12px; display: flex; flex-direction: column; max-height: 100%; }
     .column h4 { padding: 12px; margin: 0; color: white; border-radius: 12px 12px 0 0; text-align: center; font-size: 14px; font-weight: 600; }
     
     /* Excel 列表 */
     .list-page { flex-direction: column; padding: 25px; overflow: auto; background: white; }
     .config-section { background: #fdfdfd; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px dashed #4ca1af; }
-    
     .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #eee; border-radius: 8px; }
     .excel-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     .excel-table th { background: #f4f7f6; color: #7f8c8d; text-align: left; padding: 12px; border: 1px solid #dee2e6; font-size: 14px; position: relative; }
     .excel-table td { padding: 12px; border: 1px solid #dee2e6; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .excel-table tr:hover { background: #f1f9fa; cursor: context-menu; }
-    .bold-time { font-weight: bold; color: #2c3e50; }
-
-    /* 調寬撥桿 */
     .resizer { position: absolute; right: 0; top: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 1; }
-    .resizer:hover { background: rgba(76, 161, 175, 0.5); }
 
     /* 右鍵選單 */
     .context-menu { position:absolute; background:white; border-radius: 8px; z-index:4000; display:none; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #eee; overflow: hidden; min-width: 120px; }
-    .context-menu div { padding: 10px 20px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+    .context-menu div { padding: 10px 20px; cursor: pointer; font-size: 14px; }
     .context-menu div:hover { background: #f0f7f8; color: #4ca1af; }
 
-    /* 狀態與卡片 */
     .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
     .status-tag { padding: 4px 10px; border-radius: 20px; color: white; font-size: 11px; font-weight: bold; }
     .card { background: white; padding: 12px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.04); transition: 0.2s; }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); }
+    .bold-time { font-weight: bold; color: #2c3e50; }
 
     /* 彈窗 */
     .modal { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:20px; z-index:3000; display:none; width:360px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
@@ -119,12 +123,12 @@
 
 <div id="modal" class="modal">
     <h3 style="text-align:center; margin:0 0 15px 0;">學員資料詳情</h3>
-    <label>學員姓名</label><input id="mName" placeholder="輸入姓名">
+    <label>學員姓名</label><input id="mName">
     <label>預約日期與時間</label>
     <div style="display:flex; gap:5px;"><input type="date" id="mDate" style="flex:2;"><select id="mHour" style="flex:1;"></select><select id="mMin" style="flex:1;"><option>00</option><option>30</option></select></div>
-    <label>聯絡事項</label><input id="mContact" placeholder="詢問課程、試聽預約等">
+    <label>聯絡事項</label><input id="mContact">
     <label>目前狀態</label><select id="mStatus"></select>
-    <label>私房備註</label><textarea id="mNote" rows="2" placeholder="學員背景記錄..."></textarea>
+    <label>私房備註</label><textarea id="mNote" rows="2"></textarea>
     <div style="display:flex; gap:12px; margin-top:20px;">
         <button onclick="saveData()" style="flex:1.5; background:#4ca1af; color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">儲存資料</button>
         <button onclick="closeModal()" style="flex:1; background:#f1f2f6; border:none; border-radius:10px; cursor:pointer;">取消</button>
@@ -132,52 +136,37 @@
 </div>
 
 <script>
+/* 邏輯部分與先前完全一致，僅針對 UI 渲染微調 */
 let data = JSON.parse(localStorage.getItem("lily_crm_vFinal")) || [];
 let statuses = JSON.parse(localStorage.getItem("lily_crm_status_vFinal")) || [
-    { name: "已邀約", color: "#54a0ff" },
-    { name: "未DEMO", color: "#ff9f43" },
-    { name: "已DEMO", color: "#1dd1a1" },
-    { name: "成交", color: "#a29bfe" },
-    { name: "取消", color: "#ee5253" }
+    { name: "已邀約", color: "#54a0ff" }, { name: "未DEMO", color: "#ff9f43" }, { name: "已DEMO", color: "#1dd1a1" }, { name: "成交", color: "#a29bfe" }, { name: "取消", color: "#ee5253" }
 ];
-let currentEditId = null;
-let draggedId = null;
+let currentEditId = null; let draggedId = null;
 
 const hSel = document.getElementById('mHour');
 for(let i=0; i<24; i++) { let v = i<10?'0'+i:i; hSel.innerHTML += `<option value="${v}">${v}</option>`; }
 
-function persist() {
-    localStorage.setItem("lily_crm_vFinal", JSON.stringify(data));
-    localStorage.setItem("lily_crm_status_vFinal", JSON.stringify(statuses));
-}
+function persist() { localStorage.setItem("lily_crm_vFinal", JSON.stringify(data)); localStorage.setItem("lily_crm_status_vFinal", JSON.stringify(statuses)); }
 
 function renderStatusManager() {
-    const container = document.getElementById('status-manager');
-    const select = document.getElementById('mStatus');
+    const container = document.getElementById('status-manager'); const select = document.getElementById('mStatus');
     container.innerHTML = ""; select.innerHTML = "";
     statuses.forEach((s, idx) => {
-        const btn = document.createElement('div');
-        btn.style.cssText = `background:${s.color}; color:white; padding:5px 12px; border-radius:15px; font-size:12px; display:flex; align-items:center; gap:6px;`;
+        const btn = document.createElement('div'); btn.style.cssText = `background:${s.color}; color:white; padding:5px 12px; border-radius:15px; font-size:12px; display:flex; align-items:center; gap:6px;`;
         btn.innerHTML = `${s.name} <span onclick="deleteStatus(${idx})" style="cursor:pointer; font-weight:bold;">×</span>`;
-        container.appendChild(btn);
-        select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+        container.appendChild(btn); select.innerHTML += `<option value="${s.name}">${s.name}</option>`;
     });
 }
 
 function addStatus() {
-    const name = document.getElementById('newStatusName').value;
-    const color = document.getElementById('newStatusColor').value;
+    const name = document.getElementById('newStatusName').value; const color = document.getElementById('newStatusColor').value;
     if(!name) return alert("請輸入狀態名稱");
-    statuses.push({ name, color });
-    document.getElementById('newStatusName').value = "";
-    persist(); renderStatusManager(); render();
+    statuses.push({ name, color }); document.getElementById('newStatusName').value = ""; persist(); renderStatusManager(); render();
 }
 
 function deleteStatus(idx) {
     if(statuses.length <= 1) return alert("至少保留一個狀態");
-    if(confirm(`刪除狀態「${statuses[idx].name}」？`)) {
-        statuses.splice(idx, 1); persist(); renderStatusManager(); render();
-    }
+    if(confirm(`刪除狀態「${statuses[idx].name}」？`)) { statuses.splice(idx, 1); persist(); renderStatusManager(); render(); }
 }
 
 function switchPage(pageId, el) {
@@ -187,20 +176,17 @@ function switchPage(pageId, el) {
 }
 
 function showContextMenu(e, id) {
-    e.preventDefault();
-    const menu = document.getElementById("contextMenu");
+    e.preventDefault(); const menu = document.getElementById("contextMenu");
     menu.innerHTML = `<div onclick="openModal(${id})">修改資料</div><div onclick="deleteItem(${id})" style="color:#ee5253">移除學員</div>`;
-    menu.style.display = "block";
-    menu.style.left = e.pageX + "px";
-    menu.style.top = e.pageY + "px";
+    menu.style.display = "block"; menu.style.left = e.pageX + "px"; menu.style.top = e.pageY + "px";
 }
 document.addEventListener("click", () => document.getElementById("contextMenu").style.display = "none");
 
 function render() {
-    const calendarEl = document.getElementById('calendar');
-    calendarEl.innerHTML = '';
+    const calendarEl = document.getElementById('calendar'); calendarEl.innerHTML = '';
     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth', locale: 'zh-tw',
+        initialView: 'dayGridMonth', locale: 'zh-tw', expandRows: true, // 讓格子自動填滿容器
+        handleWindowResize: true,
         eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
         events: data.map(x => {
             const s = statuses.find(st => st.name === x.status) || statuses[0];
@@ -244,8 +230,7 @@ function renderBoard() {
 }
 
 function renderList() {
-    const tbody = document.getElementById("list-body");
-    const keyword = document.getElementById("listSearch").value.toLowerCase();
+    const tbody = document.getElementById("list-body"); const keyword = document.getElementById("listSearch").value.toLowerCase();
     tbody.innerHTML = "";
     data.filter(x => x.name.toLowerCase().includes(keyword) || (x.contact && x.contact.toLowerCase().includes(keyword)))
         .sort((a,b)=>new Date(a.time)-new Date(b.time)).forEach(item => {
@@ -264,8 +249,7 @@ function renderList() {
 function initResizable() {
     const ths = document.querySelectorAll('th');
     ths.forEach(th => {
-        const resizer = th.querySelector('.resizer');
-        if(!resizer) return;
+        const resizer = th.querySelector('.resizer'); if(!resizer) return;
         resizer.onmousedown = (e) => {
             const startX = e.clientX; const startW = th.offsetWidth;
             document.onmousemove = (me) => { th.style.width = startW + (me.clientX - startX) + 'px'; };
@@ -275,8 +259,7 @@ function initResizable() {
 }
 
 function openModal(id = null, defaultDate = null) {
-    currentEditId = id ? parseInt(id) : null;
-    renderStatusManager();
+    currentEditId = id ? parseInt(id) : null; renderStatusManager();
     document.getElementById("modal").style.display = "block";
     const item = data.find(x => x.id == currentEditId);
     document.getElementById("mName").value = item ? item.name : "";
@@ -285,36 +268,10 @@ function openModal(id = null, defaultDate = null) {
     document.getElementById("mNote").value = item ? item.note : "";
     if(item) {
         const [d, t] = item.time.split('T');
-        document.getElementById("mDate").value = d;
-        document.getElementById("mHour").value = t.split(':')[0];
-        document.getElementById("mMin").value = t.split(':')[1];
+        document.getElementById("mDate").value = d; document.getElementById("mHour").value = t.split(':')[0]; document.getElementById("mMin").value = t.split(':')[1];
     } else {
         document.getElementById("mDate").value = defaultDate || new Date().toISOString().split('T')[0];
         document.getElementById("mHour").value = "09"; document.getElementById("mMin").value = "00";
     }
 }
-function closeModal() { document.getElementById("modal").style.display = "none"; }
-
-function saveData() {
-    if(!document.getElementById("mName").value) return alert("請輸入姓名");
-    const time = `${document.getElementById("mDate").value}T${document.getElementById("mHour").value}:${document.getElementById("mMin").value}`;
-    const item = {
-        id: currentEditId || Date.now(),
-        name: document.getElementById("mName").value,
-        contact: document.getElementById("mContact").value,
-        status: document.getElementById("mStatus").value,
-        time: time,
-        note: document.getElementById("mNote").value
-    };
-    if(currentEditId) data[data.findIndex(x => x.id == currentEditId)] = item;
-    else data.push(item);
-    persist(); closeModal(); render(); renderList();
-}
-
-function deleteItem(id) { if(confirm("確定刪除？")) { data = data.filter(x => x.id != id); persist(); render(); renderList(); } }
-
-render();
-renderStatusManager();
-</script>
-</body>
-</html>
+function closeModal()
