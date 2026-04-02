@@ -274,4 +274,19 @@ function openModal(id = null, defaultDate = null) {
         document.getElementById("mHour").value = "09"; document.getElementById("mMin").value = "00";
     }
 }
-function closeModal()
+function closeModal() { document.getElementById("modal").style.display = "none"; }
+
+function saveData() {
+    if(!document.getElementById("mName").value) return alert("請輸入姓名");
+    const time = `${document.getElementById("mDate").value}T${document.getElementById("mHour").value}:${document.getElementById("mMin").value}`;
+    const item = { id: currentEditId || Date.now(), name: document.getElementById("mName").value, contact: document.getElementById("mContact").value, status: document.getElementById("mStatus").value, time: time, note: document.getElementById("mNote").value };
+    if(currentEditId) data[data.findIndex(x => x.id == currentEditId)] = item; else data.push(item);
+    persist(); closeModal(); render(); renderList();
+}
+
+function deleteItem(id) { if(confirm("確定刪除？")) { data = data.filter(x => x.id != id); persist(); render(); renderList(); } }
+
+render(); renderStatusManager();
+</script>
+</body>
+</html>
