@@ -30,7 +30,7 @@
     .page-content { height: calc(100vh - var(--header-height) - var(--tab-height)); width: 100vw; display: none; }
     .page-content.active { display: flex; }
 
-    /* --- 行事曆與看板樣式 (保留 Lily 喜歡的大格子與比例) --- */
+    /* 行事曆與看板 */
     .calendar-wrapper { flex: 1.5; background: white; padding: 20px; border-right: 1px solid #e0e6ed; overflow-y: auto; }
     #calendar { height: 100%; min-height: 700px; }
     .fc .fc-daygrid-day { min-height: 120px !important; } 
@@ -40,13 +40,12 @@
     .column { flex: 0 0 210px; background: #eaedf2; border-radius: 12px; display: flex; flex-direction: column; max-height: 100%; }
     .column h4 { padding: 12px; margin: 0; color: white; border-radius: 12px 12px 0 0; text-align: center; font-size: 14px; font-weight: 600; }
     
-    .card { background: white; padding: 12px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.04); transition: 0.2s; border-left: 4px solid var(--primary-color); }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); }
-    .card-title { font-weight: bold; font-size: 15px; margin-bottom: 5px; display: block; color: #2c3e50; }
+    .card { background: white; padding: 12px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.04); border-left: 4px solid var(--primary-color); }
+    .card-title { font-weight: bold; font-size: 15px; display: block; color: #2c3e50; }
     .card-time-en { color: var(--primary-color); font-size: 11px; font-weight: 600; font-family: "Segoe UI", sans-serif; display: block; margin-top: 4px; }
     .bold-time { font-weight: bold; color: #2c3e50; }
 
-    /* --- 業績分頁專屬樣式 --- */
+    /* 業績管理頁 */
     .sales-page { flex-direction: column; padding: 30px; overflow-y: auto; background: #f4f7f6; }
     .sales-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
     .stat-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary-color); }
@@ -55,7 +54,6 @@
     .progress-container { background: #eee; border-radius: 10px; height: 12px; margin-top: 10px; overflow: hidden; }
     .progress-bar { background: linear-gradient(90deg, #4ca1af, #2c3e50); height: 100%; transition: 0.5s; }
 
-    /* --- 列表與表格 --- */
     .list-page { flex-direction: column; padding: 25px; overflow: auto; background: white; }
     .table-container { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #eee; border-radius: 8px; }
     .excel-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -63,7 +61,6 @@
     .excel-table tr:hover { background: #f1f9fa; cursor: context-menu; }
     .resizer { position: absolute; right: 0; top: 0; width: 6px; height: 100%; cursor: col-resize; z-index: 1; }
 
-    /* --- 選單與彈窗 --- */
     .context-menu { position:absolute; background:white; border-radius: 8px; z-index:4000; display:none; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid #eee; overflow: hidden; min-width: 120px; }
     .context-menu div { padding: 10px 20px; cursor: pointer; font-size: 14px; }
     .context-menu div:hover { background: #f0f7f8; color: var(--primary-color); }
@@ -75,7 +72,7 @@
 </head>
 <body>
 
-<header><h2>Lily 的學員追蹤與業績管理</h2></header>
+<header><h2>Lily 的業績與追蹤戰情室</h2></header>
 
 <div class="nav-tabs">
     <div class="tab-item active" onclick="switchPage('main-page', this)">📊 看板與行事曆</div>
@@ -94,7 +91,7 @@
         <button onclick="openModal()" style="background:var(--primary-color); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">+ 新增學員</button>
     </div>
     <div class="table-container">
-        <table class="excel-table" id="resizableTable">
+        <table class="excel-table">
             <thead>
                 <tr>
                     <th style="width: 100px;">姓名<div class="resizer"></div></th>
@@ -114,7 +111,6 @@
         <div class="stat-card">
             <h3>本月目標業績</h3>
             <div class="value">NT$ <input type="number" id="monthlyGoal" value="300000" onchange="updateSalesUI()" style="border:none; font-size:28px; font-weight:bold; width:180px; outline:none; background:transparent;"></div>
-            <small style="color:#999;">點擊金額可直接修改目標</small>
         </div>
         <div class="stat-card">
             <h3>目前累積業績</h3>
@@ -128,16 +124,9 @@
         </div>
     </div>
     <div style="background:white; padding:20px; border-radius:15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <h3 style="margin-top:0;">本月成交明細 (自動從 DEMO 成交拉取)</h3>
+        <h3 style="margin-top:0;">本月成交明細</h3>
         <table class="excel-table">
-            <thead>
-                <tr>
-                    <th>成交日期</th>
-                    <th>學員姓名</th>
-                    <th>購買方案</th>
-                    <th>金額</th>
-                </tr>
-            </thead>
+            <thead><tr><th>日期</th><th>姓名</th><th>方案</th><th>金額</th></tr></thead>
             <tbody id="sales-detail-body"></tbody>
         </table>
     </div>
@@ -146,14 +135,13 @@
 <div id="contextMenu" class="context-menu"></div>
 
 <div id="modal" class="modal">
-    <h3 style="text-align:center; margin:0 0 15px 0;">學員資料詳情</h3>
-    <label>學員姓名</label><input id="mName">
-    <label>預約日期與時間</label>
+    <h3 style="text-align:center; margin:0 0 15px 0;">學員詳情</h3>
+    <label>姓名</label><input id="mName">
+    <label>時間</label>
     <div style="display:flex; gap:5px;"><input type="date" id="mDate" style="flex:2;"><select id="mHour" style="flex:1;"></select><select id="mMin" style="flex:1;"><option>00</option><option>30</option></select></div>
-    <label>目前狀態</label><select id="mStatus" onchange="togglePlanField()"></select>
-    
-    <div id="planSection" style="display:none; background:#f0f7f8; padding:10px; border-radius:8px; margin-top:10px; border: 1px solid #4ca1af;">
-        <label style="color:#2c3e50;">💎 選擇購買方案</label>
+    <label>狀態</label><select id="mStatus" onchange="togglePlanField()"></select>
+    <div id="planSection" style="display:none; background:#f0f7f8; padding:10px; border-radius:8px; margin-top:10px; border:1px solid #4ca1af;">
+        <label>💎 選擇方案</label>
         <select id="mPlan">
             <option value="輕鬆學|68400">輕鬆學 - $68,400</option>
             <option value="進階學|92400">進階學 - $92,400</option>
@@ -161,16 +149,21 @@
             <option value="大夢想家|140400">大夢想家 - $140,400</option>
         </select>
     </div>
-
     <label>聯絡事項</label><input id="mContact">
     <label>私房備註</label><textarea id="mNote" rows="2"></textarea>
     <div style="display:flex; gap:12px; margin-top:20px;">
-        <button onclick="saveData()" style="flex:1.5; background:var(--primary-color); color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">儲存資料</button>
+        <button onclick="saveData()" style="flex:1.5; background:var(--primary-color); color:white; border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer;">儲存</button>
         <button onclick="closeModal()" style="flex:1; background:#f1f2f6; border:none; border-radius:10px; cursor:pointer;">取消</button>
     </div>
 </div>
 
 <script>
+// --- [關鍵] 資料自動搬家程式 ---
+let oldDataStr = localStorage.getItem("lily_crm_vFinal");
+if (oldDataStr && !localStorage.getItem("lily_crm_vFinal_Sales")) {
+    localStorage.setItem("lily_crm_vFinal_Sales", oldDataStr); // 把舊資料複製到新路徑
+}
+
 let data = JSON.parse(localStorage.getItem("lily_crm_vFinal_Sales")) || [];
 let statuses = JSON.parse(localStorage.getItem("lily_crm_status_vFinal")) || [
     { name: "已邀約", color: "#54a0ff" }, { name: "未DEMO", color: "#ff9f43" }, { name: "已DEMO", color: "#1dd1a1" }, { name: "成交", color: "#a29bfe" }, { name: "取消", color: "#ee5253" }
@@ -195,7 +188,7 @@ function switchPage(pageId, el) {
     document.querySelectorAll('.page-content, .tab-item').forEach(x => x.classList.remove('active'));
     document.getElementById(pageId).classList.add('active'); el.classList.add('active');
     if(pageId === 'main-page') render(); 
-    else if(pageId === 'list-page') { renderList(); initResizable(); }
+    else if(pageId === 'list-page') renderList();
     else if(pageId === 'sales-page') updateSalesUI();
 }
 
@@ -221,7 +214,7 @@ function updateSalesUI() {
 
 function showContextMenu(e, id) {
     e.preventDefault(); const menu = document.getElementById("contextMenu");
-    menu.innerHTML = `<div onclick="openModal(${id})">修改資料</div><div onclick="deleteItem(${id})" style="color:#ee5253">移除學員</div>`;
+    menu.innerHTML = `<div onclick="openModal(${id})">修改</div><div onclick="deleteItem(${id})" style="color:#ee5253">刪除</div>`;
     menu.style.display = "block"; menu.style.left = e.pageX + "px"; menu.style.top = e.pageY + "px";
 }
 document.addEventListener("click", () => document.getElementById("contextMenu").style.display = "none");
@@ -275,24 +268,12 @@ function renderBoard() {
 }
 
 function renderList() {
-    const tbody = document.getElementById("list-body"); const kw = document.getElementById("listSearch").value.toLowerCase();
-    tbody.innerHTML = data.filter(x => x.name.toLowerCase().includes(kw) || (x.note && x.note.toLowerCase().includes(kw)))
-        .sort((a,b)=>new Date(b.time)-new Date(a.time)).map(item => `
+    const tbody = document.getElementById("list-body");
+    tbody.innerHTML = data.sort((a,b)=>new Date(b.time)-new Date(a.time)).map(item => `
         <tr onclick="openModal(${item.id})" oncontextmenu="showContextMenu(event, ${item.id})">
             <td><b>${item.name}</b></td><td>${item.time.replace('T',' ')}</td><td>${item.contact || '-'}</td>
             <td><span style="color:${(statuses.find(st=>st.name===item.status)||{}).color}">${item.status}</span></td><td>${item.note || ''}</td>
         </tr>`).join('');
-}
-
-function initResizable() {
-    document.querySelectorAll('th').forEach(th => {
-        const resizer = th.querySelector('.resizer'); if(!resizer) return;
-        resizer.onmousedown = (e) => {
-            const startX = e.clientX; const startW = th.offsetWidth;
-            document.onmousemove = (me) => { th.style.width = startW + (me.clientX - startX) + 'px'; };
-            document.onmouseup = () => { document.onmousemove = null; };
-        };
-    });
 }
 
 function openModal(id = null, defaultDate = null) {
