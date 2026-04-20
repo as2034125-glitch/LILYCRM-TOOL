@@ -149,13 +149,13 @@ header{
 }
 /* 報價單容器 */
 .qcard{
-  max-width:900px;width:100%;margin:0 auto;
+  width:100%;
   background:var(--bg2);border-radius:var(--radius);
   border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;
 }
 /* 報價單頂部工具列 */
 .quote-toolbar{
-  max-width:900px;width:100%;margin:0 auto 16px;
+  width:100%;margin-bottom:16px;
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
 }
 .quote-toolbar-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.6px;text-transform:uppercase;font-family:var(--font-en);}
@@ -189,8 +189,8 @@ header{
 .q-add-btn:hover{opacity:.75;}
 /* 方案表格 */
 .q-table-wrap{overflow-x:auto;padding-bottom:2px;}
-table.q-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-.q-table th{background:#f1f5f9;padding:10px 10px;font-size:12px;font-weight:700;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;}
+table.q-table{width:100%;border-collapse:collapse;}
+.q-table th{background:#f1f5f9;padding:12px 12px;font-size:12px;font-weight:700;color:var(--text3);text-align:center;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;}
 .q-table th:last-child{border-right:none;}
 .q-table th.th-prog{background:#e8f0fe;color:#1a73e8;}
 .q-table th.th-elec{background:#fffbeb;color:#b45309;}
@@ -200,40 +200,25 @@ table.q-table{width:100%;border-collapse:collapse;table-layout:fixed;}
 .q-table tr.qsubhead th.th-elec{background:#fffdf0;}
 .q-table tr.qsubhead th.th-gift{background:#fef9c3;color:#e53935;font-weight:700;}
 .q-table tr.qsubhead th.th-magic{background:#f0fdf4;}
-.q-table td{padding:10px 10px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;font-size:14px;vertical-align:middle;}
+.q-table td{padding:12px 14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;font-size:14px;vertical-align:middle;}
 .q-table td:last-child{border-right:none;}
 .q-table tr:last-child td{border-bottom:none;}
-td.qtd-name input,td.qtd-months input{width:100%;background:transparent;border:none;outline:none;font-family:var(--font-tc);font-size:14px;color:var(--text);text-align:center;font-weight:600;cursor:text;padding:2px 4px;border-radius:4px;transition:background .15s;}
-td.qtd-name input{text-align:left;font-size:15px;}
+td.qtd-name input,td.qtd-months input{width:100%;background:transparent;border:none;outline:none;font-family:var(--font-tc);font-size:14px;color:var(--text);text-align:center;font-weight:600;cursor:text;padding:2px 6px;border-radius:4px;transition:background .15s;}
+td.qtd-name input{text-align:left;font-size:15px;font-weight:700;}
 td.qtd-name{text-align:left;}
 td.qtd-name input:focus,td.qtd-months input:focus{background:var(--accent-l);}
-td .qnum{width:64px;background:transparent;border:none;outline:none;font-family:var(--font-en);font-size:14px;font-weight:700;color:var(--text);text-align:center;padding:3px 4px;border-radius:6px;transition:background .15s;}
+td .qnum{width:100%;background:transparent;border:none;outline:none;font-family:var(--font-en);font-size:14px;font-weight:700;color:var(--text);text-align:center;padding:3px 2px;border-radius:6px;transition:background .15s;-moz-appearance:textfield;}
+td .qnum::-webkit-outer-spin-button,td .qnum::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 td .qnum:focus{background:#f0f6ff;}
 td .qnum.gift-num{color:#e53935;}
-/* 合計列 */
-tr.q-total td{background:#f8fafc;font-weight:900;font-size:16px;color:var(--text);font-family:var(--font-en);padding:12px 10px;border-top:2px solid var(--border);}
-tr.q-total td.qtl-label{font-family:var(--font-tc);font-size:13px;font-weight:700;color:var(--text2);}
-tr.q-total td.qtl-prog{color:#1a73e8;}
-tr.q-total td.qtl-elec{color:#b45309;}
-tr.q-total td.qtl-magic{color:#065f46;}
-/* 金額列 */
-tr.q-price td{background:#f8fafc;text-align:right;padding:12px 18px;border-top:1px solid var(--border);}
-.price-row-inner{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap;}
-.price-row-inner label{font-size:13px;color:var(--text3);white-space:nowrap;}
-.price-row-inner input{background:var(--accent-l);border:1.5px solid #93c5fd;color:var(--accent-d);font-family:var(--font-en);font-size:14px;font-weight:700;padding:6px 10px;border-radius:7px;outline:none;width:110px;text-align:center;transition:border-color .2s;}
-.price-row-inner input:focus{border-color:var(--accent);}
-.price-row-inner .pdiv{color:var(--border2);font-size:16px;}
-.monthly-disp{font-size:14px;color:var(--text2);white-space:nowrap;}
-.monthly-disp b{font-family:var(--font-en);color:var(--accent);font-size:15px;}
-.price-red{font-size:12px;color:#e53935;font-weight:600;margin-top:4px;text-align:right;}
 /* 刪除按鈕 */
 td.qtd-del button{background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:15px;line-height:1;padding:2px 4px;border-radius:4px;transition:color .15s,background .15s;}
 td.qtd-del button:hover{color:var(--danger);background:#fef2f2;}
 /* 勤學活動 */
-table.dil-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-.dil-table th{background:#fdf4ff;padding:9px 10px;font-size:12px;font-weight:700;color:#7e22ce;text-align:center;letter-spacing:.3px;border-bottom:2px solid #e9d5ff;border-right:1px solid #e9d5ff;}
+table.dil-table{width:100%;border-collapse:collapse;}
+.dil-table th{background:#fdf4ff;padding:11px 12px;font-size:12px;font-weight:700;color:#7e22ce;text-align:center;letter-spacing:.3px;border-bottom:2px solid #e9d5ff;border-right:1px solid #e9d5ff;}
 .dil-table th:last-child{border-right:none;}
-.dil-table td{padding:9px 10px;text-align:center;font-size:14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.dil-table td{padding:11px 14px;text-align:center;font-size:14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);color:var(--text2);vertical-align:middle;}
 .dil-table td:last-child{border-right:none;}
 .dil-table tr:last-child td{border-bottom:none;}
 .dil-table td input.di{width:100%;background:transparent;border:none;outline:none;font-family:var(--font-tc);font-size:13px;color:var(--text2);text-align:center;padding:2px 4px;border-radius:4px;transition:background .15s;}
@@ -369,7 +354,7 @@ table.dil-table{width:100%;border-collapse:collapse;table-layout:fixed;}
   .qcard{box-shadow:none;border:none;margin:0;max-width:100%;}
   .quote-toolbar{display:none!important;}
   td .qnum,td.qtd-name input,td.qtd-months input,.dil-table td input.di,
-  .q-sname-wrap input,.q-remarks textarea,.price-row-inner input{background:transparent!important;border:none!important;box-shadow:none!important;}
+  .q-sname-wrap input,.q-remarks textarea{background:transparent!important;border:none!important;box-shadow:none!important;}
   td.qtd-del,.no-print{display:none!important;}
   .q-add-btn{display:none!important;}
   .q-table th select{display:none!important;}
@@ -951,12 +936,12 @@ function applyTemplate(group, ti){
 function renderQPlan(){
   const gc = qGiftCols;
 
-  // 欄寬：加大避免擁擠
-  let colgroup = `<col style="width:120px"><col style="width:65px"><col style="width:75px">
-    <col style="width:80px"><col style="width:80px"><col style="width:80px">`;
-  gc.forEach(()=>{ colgroup += `<col style="width:90px">`; });
+  // 欄寬：使用 min-width 讓欄位可以展開填滿
+  let colgroup = `<col style="min-width:120px"><col style="min-width:65px"><col style="min-width:75px">
+    <col style="min-width:80px"><col style="min-width:80px"><col style="min-width:80px">`;
+  gc.forEach(()=>{ colgroup += `<col style="min-width:110px">`; });
   // 金額欄
-  colgroup += `<col style="width:85px"><col style="width:95px"><col style="width:85px"><col style="width:85px"><col style="width:36px">`;
+  colgroup += `<col style="min-width:90px"><col style="min-width:100px"><col style="min-width:90px"><col style="width:36px">`;
 
   // 主表頭
   let th1 = `
@@ -968,11 +953,11 @@ function renderQPlan(){
     <th rowspan="2" class="th-magic">魔法屋<br><small style="font-size:9px;font-weight:500">方案堂數</small></th>`;
   gc.forEach((g,gi)=>{
     const t = giftTheme(g.color,'th');
-    th1 += `<th style="${t};position:relative;padding:7px 6px">
-      <div style="display:flex;align-items:center;justify-content:center;gap:3px">
-        <input value="${esc(g.label)}" oninput="qGiftCols[${gi}].label=this.value;renderQPlan()"
-          style="background:transparent;border:none;outline:none;font-size:10px;font-weight:700;color:inherit;text-align:center;width:76px;cursor:text;font-family:var(--font-tc)">
-        <span style="cursor:pointer;font-size:12px;opacity:.5;line-height:1" onclick="delQGiftCol(${gi})" title="刪除">✕</span>
+    th1 += `<th style="${t};position:relative;padding:7px 4px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:2px">
+        <input value="${esc(g.label)}" oninput="qGiftCols[${gi}].label=this.value"
+          style="background:transparent;border:none;border-bottom:1px dashed currentColor;outline:none;font-size:11px;font-weight:700;color:inherit;text-align:center;width:100%;min-width:0;cursor:text;font-family:var(--font-tc);padding:2px 0">
+        <span style="cursor:pointer;font-size:12px;opacity:.4;line-height:1;flex-shrink:0" onclick="delQGiftCol(${gi})" title="刪除">✕</span>
       </div>
       <select onchange="qGiftCols[${gi}].color=this.value;renderQPlan()"
         style="margin-top:2px;font-size:9px;border:none;background:rgba(0,0,0,0.06);border-radius:3px;padding:1px 2px;cursor:pointer;width:100%">
@@ -985,29 +970,14 @@ function renderQPlan(){
   // 金額欄表頭
   th1 += `
     <th rowspan="2" style="background:#fef9ec;color:#92400e">月付<br><small style="font-size:9px;font-weight:500">八折後</small></th>
-    <th rowspan="2" style="background:#fef9ec;color:#92400e">加贈魔法屋<br><small style="font-size:9px;font-weight:500">業權</small></th>
     <th rowspan="2" style="background:#fff1f2;color:#9f1239">總價<br><small style="font-size:9px;font-weight:500">NT$</small></th>
     <th rowspan="2" style="background:#fff1f2;color:#9f1239">一付加贈<br><small style="font-size:9px;font-weight:500">選修課</small></th>
     <th rowspan="2" style="background:#f8fafc"></th>`;
-
-  // 合計列：只有堂數欄有合計，金額欄不顯示
-  let totalCells = `
-    <td class="qtl-label" colspan="2">合計</td>
-    <td id="qt-total" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>
-    <td class="qtl-prog" id="qt-prog" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>
-    <td class="qtl-elec" id="qt-elec" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>
-    <td class="qtl-magic" id="qt-magic" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>`;
-  gc.forEach((_,gi)=>{ totalCells += `<td id="qt-gift-${gi}" style="font-family:var(--font-en);font-weight:900;font-size:16px;color:#e53935">—</td>`; });
-  // 金額欄合計留空（不加總）
-  totalCells += `<td></td><td></td><td></td><td></td><td></td>`;
 
   const html = `<table class="q-table">
     <colgroup>${colgroup}</colgroup>
     <thead><tr>${th1}</tr></thead>
     <tbody id="qPlanBody"></tbody>
-    <tfoot>
-      <tr class="q-total">${totalCells}</tr>
-    </tfoot>
   </table>`;
 
   document.getElementById('qPlanTableWrap').innerHTML = html;
@@ -1020,39 +990,23 @@ function renderQPlan(){
     let giftCells = '';
     gc.forEach((g,gi)=>{
       const t = giftTheme(g.color,'td');
-      giftCells += `<td><input type="number" value="${(p.gifts||[])[gi]||0}" min="0" class="qnum gift-num" style="${t}" oninput="qPlans[${i}].gifts[${gi}]=+this.value;calcQTotals()"></td>`;
+      giftCells += `<td><input type="number" value="${(p.gifts||[])[gi]||0}" min="0" class="qnum gift-num" style="${t}" oninput="qPlans[${i}].gifts[${gi}]=+this.value"></td>`;
     });
     tr.innerHTML = `
       <td class="qtd-name"><input value="${esc(p.name)}" placeholder="方案名稱" oninput="qPlans[${i}].name=this.value"></td>
       <td class="qtd-months"><input type="number" value="${p.months||24}" min="1" class="qnum" oninput="qPlans[${i}].months=+this.value"></td>
-      <td><input type="number" value="${p.total||0}" min="0" class="qnum" oninput="qPlans[${i}].total=+this.value;calcQTotals()"></td>
-      <td><input type="number" value="${p.prog||0}"  min="0" class="qnum" oninput="qPlans[${i}].prog=+this.value;calcQTotals()"></td>
-      <td><input type="number" value="${p.elec||0}"  min="0" class="qnum" oninput="qPlans[${i}].elec=+this.value;calcQTotals()"></td>
-      <td><input type="number" value="${p.magic||0}" min="0" class="qnum" oninput="qPlans[${i}].magic=+this.value;calcQTotals()"></td>
+      <td><input type="number" value="${p.total||0}" min="0" class="qnum" oninput="qPlans[${i}].total=+this.value"></td>
+      <td><input type="number" value="${p.prog||0}"  min="0" class="qnum" oninput="qPlans[${i}].prog=+this.value"></td>
+      <td><input type="number" value="${p.elec||0}"  min="0" class="qnum" oninput="qPlans[${i}].elec=+this.value"></td>
+      <td><input type="number" value="${p.magic||0}" min="0" class="qnum" oninput="qPlans[${i}].magic=+this.value"></td>
       ${giftCells}
       <td><input type="number" value="${p.monthly||0}" min="0" class="qnum" style="color:#92400e" oninput="qPlans[${i}].monthly=+this.value"></td>
-      <td><input type="number" value="${p.bonusMagic||0}" min="0" class="qnum" style="color:#92400e" oninput="qPlans[${i}].bonusMagic=+this.value"></td>
       <td><input type="number" value="${p.price||0}" min="0" class="qnum" style="color:#9f1239" oninput="qPlans[${i}].price=+this.value"></td>
       <td><input type="number" value="${p.bonusOnePay||0}" min="0" class="qnum" style="color:#9f1239" oninput="qPlans[${i}].bonusOnePay=+this.value"></td>
       <td class="qtd-del"><button onclick="delQPlan(${i})" title="刪除">✕</button></td>`;
     tbody.appendChild(tr);
   });
 
-  calcQTotals();
-}
-
-function calcQTotals(){
-  const sum = f => qPlans.reduce((a,p)=>a+(p[f]||0),0);
-  const el = id => document.getElementById(id);
-  const set = (id,v) => { const e=el(id); if(e) e.textContent = v||'—'; };
-  set('qt-total', sum('total')||'');
-  set('qt-prog',  sum('prog')||'');
-  set('qt-elec',  sum('elec')||'');
-  set('qt-magic', sum('magic')||'');
-  qGiftCols.forEach((_,gi)=>{
-    const total = qPlans.reduce((a,p)=>a+((p.gifts||[])[gi]||0),0);
-    set(`qt-gift-${gi}`, total ? `+${total}` : '');
-  });
 }
 
 function addQPlan(){
