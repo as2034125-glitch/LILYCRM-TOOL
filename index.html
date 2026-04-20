@@ -990,15 +990,16 @@ function renderQPlan(){
     let giftCells = '';
     gc.forEach((g,gi)=>{
       const t = giftTheme(g.color,'td');
-      giftCells += `<td><input type="number" value="${(p.gifts||[])[gi]||0}" min="0" class="qnum gift-num" style="${t}" oninput="qPlans[${i}].gifts[${gi}]=+this.value"></td>`;
+      giftCells += `<td><input type="number" value="${(p.gifts||[])[gi]||0}" min="0" class="qnum gift-num" style="${t}" oninput="qPlans[${i}].gifts[${gi}]=+this.value;recalcRow(${i})"></td>`;
     });
+    const grandTotal = (p.total||0) + (p.gifts||[]).reduce((a,b)=>a+b,0);
     tr.innerHTML = `
       <td class="qtd-name"><input value="${esc(p.name)}" placeholder="方案名稱" oninput="qPlans[${i}].name=this.value"></td>
       <td class="qtd-months"><input type="number" value="${p.months||24}" min="1" class="qnum" oninput="qPlans[${i}].months=+this.value"></td>
-      <td><input type="number" value="${p.total||0}" min="0" class="qnum" oninput="qPlans[${i}].total=+this.value"></td>
-      <td><input type="number" value="${p.prog||0}"  min="0" class="qnum" oninput="qPlans[${i}].prog=+this.value"></td>
-      <td><input type="number" value="${p.elec||0}"  min="0" class="qnum" oninput="qPlans[${i}].elec=+this.value"></td>
-      <td><input type="number" value="${p.magic||0}" min="0" class="qnum" oninput="qPlans[${i}].magic=+this.value"></td>
+      <td><span class="qnum" style="font-weight:900;color:var(--text)" id="qgt-${i}">${grandTotal}</span></td>
+      <td><input type="number" value="${p.prog||0}"  min="0" class="qnum" oninput="qPlans[${i}].prog=+this.value;recalcRow(${i})"></td>
+      <td><input type="number" value="${p.elec||0}"  min="0" class="qnum" oninput="qPlans[${i}].elec=+this.value;recalcRow(${i})"></td>
+      <td><input type="number" value="${p.magic||0}" min="0" class="qnum" oninput="qPlans[${i}].magic=+this.value;recalcRow(${i})"></td>
       ${giftCells}
       <td><input type="number" value="${p.monthly||0}" min="0" class="qnum" style="color:#92400e" oninput="qPlans[${i}].monthly=+this.value"></td>
       <td><input type="number" value="${p.price||0}" min="0" class="qnum" style="color:#9f1239" oninput="qPlans[${i}].price=+this.value"></td>
@@ -1007,6 +1008,15 @@ function renderQPlan(){
     tbody.appendChild(tr);
   });
 
+}
+
+/* 重新計算某列的總堂數（方案堂數 + 所有贈送堂數） */
+function recalcRow(i){
+  const p = qPlans[i];
+  p.total = (p.prog||0) + (p.elec||0) + (p.magic||0);
+  const grandTotal = p.total + (p.gifts||[]).reduce((a,b)=>a+b,0);
+  const el = document.getElementById('qgt-'+i);
+  if(el) el.textContent = grandTotal;
 }
 
 function addQPlan(){
