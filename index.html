@@ -75,7 +75,7 @@ header{
 /* ══════════════════════════════════════
    Pages
 ══════════════════════════════════════ */
-.page-content{display:none;height:calc(100vh - var(--h) - var(--tab));width:100vw;}
+.page-content{display:none;height:calc(100vh - var(--h) - var(--tab));width:100vw;overflow:hidden;}
 .page-content.active{display:flex;}
 
 /* ─── 行事曆 ─── */
@@ -144,14 +144,14 @@ header{
    報價單頁面
 ══════════════════════════════════════ */
 .quote-page{
-  flex-direction:column;overflow-y:auto;
-  background:var(--bg);padding:20px 24px 40px;
+  flex-direction:column;overflow-y:scroll!important;overflow-x:auto!important;
+  background:var(--bg);padding:20px 24px 80px;
 }
 /* 報價單容器 */
 .qcard{
   width:100%;
   background:var(--bg2);border-radius:var(--radius);
-  border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;
+  border:1px solid var(--border);box-shadow:var(--shadow);overflow:visible;
 }
 /* 報價單頂部工具列 */
 .quote-toolbar{
@@ -471,7 +471,9 @@ table.dil-table{width:100%;border-collapse:collapse;}
 <div id="quote-page" class="page-content quote-page">
   <div class="quote-toolbar no-print">
     <div class="quote-toolbar-label">📋 方案報價單</div>
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="loadQuoteList()" style="color:var(--accent)">📂 載入報價</button>
+      <button class="btn btn-ghost btn-sm" onclick="saveQuote()" style="color:var(--success)">💾 儲存報價</button>
       <button class="btn btn-ghost btn-sm" onclick="resetQuote()">↺ 重置</button>
       <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨 列印 / PDF</button>
     </div>
@@ -645,6 +647,15 @@ table.dil-table{width:100%;border-collapse:collapse;}
     </div>
   </div>
 
+  <!-- 儲存的報價單列表 -->
+  <div id="savedQuotesModal" class="tpl-modal" onclick="event.stopPropagation()" style="display:none">
+    <div class="tpl-modal-title">📂 已儲存的報價單</div>
+    <div id="savedQuotesList" style="max-height:400px;overflow-y:auto;margin-bottom:14px"></div>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn btn-ghost btn-sm" onclick="closeOverlay()">關閉</button>
+    </div>
+  </div>
+
   <!-- 刪除確認 -->
   <div id="confirmBox" class="confirm-box" onclick="event.stopPropagation()" style="display:none">
     <div class="confirm-icon">🗑️</div>
@@ -802,7 +813,7 @@ document.addEventListener('click',closeCtx);
 
 /* ════════ Overlay ════════ */
 function openOverlay(which){
-  ['modal','statusModal','confirmBox','tplModal'].forEach(id=>document.getElementById(id).style.display=(id===which)?'block':'none');
+  ['modal','statusModal','confirmBox','tplModal','savedQuotesModal'].forEach(id=>document.getElementById(id).style.display=(id===which)?'block':'none');
   document.getElementById('overlay').classList.add('show');
 }
 function closeOverlay(){document.getElementById('overlay').classList.remove('show');pendingDeleteId=null;}
@@ -1263,6 +1274,113 @@ function copyMsg(){
     btn.textContent = '✅ 已複製！';
     setTimeout(()=>{ btn.textContent = '📋 複製全部'; }, 2000);
   });
+}
+
+/* ════════════════════════════════════════
+   報價單儲存/載入（localStorage）
+   key: lily_quotes → [{id, name, date, data:{...}}]
+════════════════════════════════════════ */
+function getSavedQuotes(){
+  return JSON.parse(localStorage.getItem('lily_quotes'))||[];
+}
+function putSavedQuotes(list){
+  localStorage.setItem('lily_quotes', JSON.stringify(list));
+}
+
+function saveQuote(){
+  const name = document.getElementById('qStudentName').value.trim();
+  if(!name){ alert('請先填入學員姓名'); return; }
+  if(qPlans.length===0){ alert('請先新增至少一個方案'); return; }
+
+  const planNames = qPlans.map(p=>p.name).join('、');
+  const snapshot = {
+    studentName: name,
+    giftCols: JSON.parse(JSON.stringify(qGiftCols)),
+    plans: JSON.parse(JSON.stringify(qPlans)),
+    dils: JSON.parse(JSON.stringify(qDils)),
+    remarks: document.getElementById('qRemarks').value,
+    msgGifts: document.getElementById('msgGifts').value,
+    msgTemplate: document.getElementById('msgTemplate').value,
+    msgDeadline: document.getElementById('msgDeadline').value,
+  };
+
+  const list = getSavedQuotes();
+  // 同名學員覆蓋
+  const existing = list.findIndex(q=>q.name===name);
+  const entry = {
+    id: existing>=0 ? list[existing].id : Date.now(),
+    name,
+    planNames,
+    date: new Date().toLocaleDateString('zh-TW'),
+    data: snapshot
+  };
+  if(existing>=0){
+    if(!confirm(`「${name}」已有儲存的報價，要覆蓋嗎？`)) return;
+    list[existing] = entry;
+  } else {
+    list.unshift(entry);
+  }
+  putSavedQuotes(list);
+  alert(`✅ 已儲存「${name}」的報價單`);
+}
+
+function loadQuoteList(){
+  const list = getSavedQuotes();
+  const container = document.getElementById('savedQuotesList');
+
+  if(list.length===0){
+    container.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3);font-size:14px">還沒有儲存任何報價單</div>';
+    openOverlay('savedQuotesModal');
+    return;
+  }
+
+  container.innerHTML = list.map((q,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--bg3);cursor:pointer;transition:border-color .15s,background .15s"
+      onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--accent-l)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg3)'"
+      onclick="loadQuote(${i})">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14px;color:var(--text)">${esc(q.name)}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px">${esc(q.planNames||'')} · ${esc(q.date)}</div>
+      </div>
+      <button onclick="event.stopPropagation();deleteQuote(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:4px;border-radius:6px;transition:color .15s"
+        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--text3)'" title="刪除">🗑️</button>
+    </div>
+  `).join('');
+
+  openOverlay('savedQuotesModal');
+}
+
+function loadQuote(i){
+  const list = getSavedQuotes();
+  const q = list[i];
+  if(!q) return;
+
+  const d = q.data;
+  document.getElementById('qStudentName').value = d.studentName||'';
+  document.getElementById('qRemarks').value = d.remarks||'';
+  document.getElementById('msgGifts').value = d.msgGifts||'';
+  document.getElementById('msgTemplate').value = d.msgTemplate||'';
+  document.getElementById('msgDeadline').value = d.msgDeadline||'';
+
+  qGiftCols = d.giftCols || [{label:'加贈選修課',color:'elec'}];
+  qPlans = d.plans || [];
+  qDils = d.dils || [];
+
+  // 隱藏訊息產出區
+  document.getElementById('msgOutput').style.display='none';
+
+  closeOverlay();
+  renderQPlan();
+  renderQDil();
+}
+
+function deleteQuote(i){
+  const list = getSavedQuotes();
+  if(!confirm(`確定刪除「${list[i].name}」的報價單？`)) return;
+  list.splice(i,1);
+  putSavedQuotes(list);
+  loadQuoteList(); // 重新渲染列表
 }
 
 function resetQuote(){
