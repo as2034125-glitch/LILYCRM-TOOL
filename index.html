@@ -372,6 +372,7 @@ table.dil-table{width:100%;border-collapse:collapse;table-layout:fixed;}
   .q-sname-wrap input,.q-remarks textarea,.price-row-inner input{background:transparent!important;border:none!important;box-shadow:none!important;}
   td.qtd-del,.no-print{display:none!important;}
   .q-add-btn{display:none!important;}
+  .q-table th select{display:none!important;}
   .q-header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .q-table th,.dil-table th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
@@ -510,7 +511,14 @@ table.dil-table{width:100%;border-collapse:collapse;table-layout:fixed;}
     <div class="q-table-wrap" id="qPlanTableWrap"></div>
 
     <!-- 勤學活動 -->
-    <div class="q-sec" style="margin-top:4px">勤學活動 <button class="q-add-btn" onclick="addQDil()">＋ 新增</button></div>
+    <div class="q-sec" style="margin-top:4px">
+      勤學活動
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="q-add-btn" onclick="applyDilTemplate('KIDS')" style="background:#e0f2fe;color:#0284c7">套用 KIDS</button>
+        <button class="q-add-btn" onclick="applyDilTemplate('Junior')" style="background:#fef9c3;color:#b45309">套用 Junior</button>
+        <button class="q-add-btn" onclick="addQDil()">＋ 新增</button>
+      </div>
+    </div>
     <div style="overflow-x:auto;padding-bottom:4px" id="qDilTableWrap"></div>
 
     <!-- 備註 -->
@@ -846,11 +854,11 @@ const Q_DIL_DEFAULTS = {
 };
 const Q_TEMPLATES = {
   KIDS: [
-    { name:'輕鬆學',   months:24, total:120, prog:80,  elec:15, magic:25, gifts:[0], monthly:2850, price:68400,  perClass:489, bonusOnePay:5,  bonusMagic:20 },
-    { name:'進階學',   months:24, total:175, prog:120, elec:25, magic:30, gifts:[0], monthly:3850, price:92400,  perClass:462, bonusOnePay:8,  bonusMagic:25 },
-    { name:'小夢想家', months:24, total:240, prog:160, elec:40, magic:40, gifts:[0], monthly:4850, price:116400, perClass:423, bonusOnePay:12, bonusMagic:35 },
-    { name:'大夢想家', months:24, total:295, prog:200, elec:50, magic:45, gifts:[0], monthly:5850, price:140400, perClass:413, bonusOnePay:16, bonusMagic:45 },
-    { name:'體驗學',   months:12, total:65,  prog:40,  elec:5,  magic:20, gifts:[0], monthly:3200, price:38400,  perClass:512, bonusOnePay:0,  bonusMagic:10 },
+    { name:'輕鬆學',   months:24, total:120, prog:80,  elec:15, magic:25, gifts:[0,0], monthly:2850, price:68400,  perClass:489, bonusOnePay:5,  bonusMagic:20 },
+    { name:'進階學',   months:24, total:175, prog:120, elec:25, magic:30, gifts:[0,0], monthly:3850, price:92400,  perClass:462, bonusOnePay:8,  bonusMagic:25 },
+    { name:'小夢想家', months:24, total:240, prog:160, elec:40, magic:40, gifts:[0,0], monthly:4850, price:116400, perClass:423, bonusOnePay:12, bonusMagic:35 },
+    { name:'大夢想家', months:24, total:295, prog:200, elec:50, magic:45, gifts:[0,0], monthly:5850, price:140400, perClass:413, bonusOnePay:16, bonusMagic:45 },
+    { name:'體驗學',   months:12, total:65,  prog:40,  elec:5,  magic:20, gifts:[0,0], monthly:3200, price:38400,  perClass:512, bonusOnePay:0,  bonusMagic:10 },
   ],
   Junior: [
     { name:'輕鬆學',   months:24, total:100, prog:80,  elec:20, magic:0, gifts:[4], monthly:2850, price:68400,  perClass:658, bonusOnePay:5,  bonusMagic:0 },
@@ -920,9 +928,9 @@ function applyTemplate(group, ti){
   // 第一次加入某群組方案時，同步更新贈送欄 + 勤學活動
   if(qPlans.length === 0){
     if(group === 'KIDS'){
-      qGiftCols = [{label:'當月贈送選修課',color:'elec'}];
+      qGiftCols = [{label:'加贈選修課',color:'elec'},{label:'加贈魔法屋',color:'magic'}];
     } else {
-      qGiftCols = [{label:'當月贈送選修課',color:'elec'}];
+      qGiftCols = [{label:'加贈選修課',color:'elec'}];
     }
     // 帶入對應勤學活動預設值
     qDils = Q_DIL_DEFAULTS[group].map(d=>({...d, bonuses:[...d.bonuses]}));
@@ -943,27 +951,27 @@ function applyTemplate(group, ti){
 function renderQPlan(){
   const gc = qGiftCols;
 
-  // 欄寬：固定欄 + 贈送欄 + 金額欄 + 刪除
-  let colgroup = `<col style="width:110px"><col style="width:60px"><col style="width:68px">
-    <col style="width:72px"><col style="width:68px"><col style="width:72px">`;
-  gc.forEach(()=>{ colgroup += `<col style="width:82px">`; });
+  // 欄寬：加大避免擁擠
+  let colgroup = `<col style="width:120px"><col style="width:65px"><col style="width:75px">
+    <col style="width:80px"><col style="width:80px"><col style="width:80px">`;
+  gc.forEach(()=>{ colgroup += `<col style="width:90px">`; });
   // 金額欄
-  colgroup += `<col style="width:80px"><col style="width:88px"><col style="width:72px"><col style="width:80px"><col style="width:34px">`;
+  colgroup += `<col style="width:85px"><col style="width:95px"><col style="width:85px"><col style="width:85px"><col style="width:36px">`;
 
   // 主表頭
   let th1 = `
-    <th rowspan="2" style="text-align:left;padding-left:12px">方案名稱</th>
+    <th rowspan="2" style="text-align:left;padding-left:14px">方案名稱</th>
     <th rowspan="2">月數</th>
     <th rowspan="2">總堂數</th>
     <th rowspan="2" class="th-prog">進度班<br><small style="font-size:9px;font-weight:500">方案堂數</small></th>
-    <th rowspan="2" class="th-elec" style="font-size:11px">選修課<br><small style="font-size:9px;font-weight:500">方案堂數</small></th>
+    <th rowspan="2" class="th-elec">選修課<br><small style="font-size:9px;font-weight:500">方案堂數</small></th>
     <th rowspan="2" class="th-magic">魔法屋<br><small style="font-size:9px;font-weight:500">方案堂數</small></th>`;
   gc.forEach((g,gi)=>{
     const t = giftTheme(g.color,'th');
-    th1 += `<th style="${t};position:relative;padding:6px 6px">
+    th1 += `<th style="${t};position:relative;padding:7px 6px">
       <div style="display:flex;align-items:center;justify-content:center;gap:3px">
         <input value="${esc(g.label)}" oninput="qGiftCols[${gi}].label=this.value;renderQPlan()"
-          style="background:transparent;border:none;outline:none;font-size:10px;font-weight:700;color:inherit;text-align:center;width:72px;cursor:text;font-family:var(--font-tc)">
+          style="background:transparent;border:none;outline:none;font-size:10px;font-weight:700;color:inherit;text-align:center;width:76px;cursor:text;font-family:var(--font-tc)">
         <span style="cursor:pointer;font-size:12px;opacity:.5;line-height:1" onclick="delQGiftCol(${gi})" title="刪除">✕</span>
       </div>
       <select onchange="qGiftCols[${gi}].color=this.value;renderQPlan()"
@@ -976,24 +984,22 @@ function renderQPlan(){
   });
   // 金額欄表頭
   th1 += `
-    <th rowspan="2" style="background:#fef9ec;color:#92400e;font-size:11px">月付<br><small style="font-size:9px;font-weight:500">八折後</small></th>
-    <th rowspan="2" style="background:#fef9ec;color:#92400e;font-size:11px">加贈魔法屋<br><small style="font-size:9px;font-weight:500">業權</small></th>
-    <th rowspan="2" style="background:#fff1f2;color:#9f1239;font-size:11px">總價<br><small style="font-size:9px;font-weight:500">NT$</small></th>
-    <th rowspan="2" style="background:#fff1f2;color:#9f1239;font-size:11px">一付加贈<br><small style="font-size:9px;font-weight:500">選修課</small></th>
+    <th rowspan="2" style="background:#fef9ec;color:#92400e">月付<br><small style="font-size:9px;font-weight:500">八折後</small></th>
+    <th rowspan="2" style="background:#fef9ec;color:#92400e">加贈魔法屋<br><small style="font-size:9px;font-weight:500">業權</small></th>
+    <th rowspan="2" style="background:#fff1f2;color:#9f1239">總價<br><small style="font-size:9px;font-weight:500">NT$</small></th>
+    <th rowspan="2" style="background:#fff1f2;color:#9f1239">一付加贈<br><small style="font-size:9px;font-weight:500">選修課</small></th>
     <th rowspan="2" style="background:#f8fafc"></th>`;
 
-  // 合計列
+  // 合計列：只有堂數欄有合計，金額欄不顯示
   let totalCells = `
     <td class="qtl-label" colspan="2">合計</td>
-    <td id="qt-total" style="font-family:var(--font-en);font-weight:900;font-size:15px">—</td>
-    <td class="qtl-prog" id="qt-prog" style="font-family:var(--font-en);font-weight:900;font-size:15px">—</td>
-    <td class="qtl-elec" id="qt-elec" style="font-family:var(--font-en);font-weight:900;font-size:15px">—</td>
-    <td class="qtl-magic" id="qt-magic" style="font-family:var(--font-en);font-weight:900;font-size:15px">—</td>`;
-  gc.forEach((_,gi)=>{ totalCells += `<td id="qt-gift-${gi}" style="font-family:var(--font-en);font-weight:900;font-size:15px;color:#e53935">—</td>`; });
-  // 金額合計欄（空，因為多方案金額不加總）
+    <td id="qt-total" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>
+    <td class="qtl-prog" id="qt-prog" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>
+    <td class="qtl-elec" id="qt-elec" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>
+    <td class="qtl-magic" id="qt-magic" style="font-family:var(--font-en);font-weight:900;font-size:16px">—</td>`;
+  gc.forEach((_,gi)=>{ totalCells += `<td id="qt-gift-${gi}" style="font-family:var(--font-en);font-weight:900;font-size:16px;color:#e53935">—</td>`; });
+  // 金額欄合計留空（不加總）
   totalCells += `<td></td><td></td><td></td><td></td><td></td>`;
-
-  const totalColspan = 6 + gc.length + 4 + 1;
 
   const html = `<table class="q-table">
     <colgroup>${colgroup}</colgroup>
@@ -1001,20 +1007,6 @@ function renderQPlan(){
     <tbody id="qPlanBody"></tbody>
     <tfoot>
       <tr class="q-total">${totalCells}</tr>
-      <tr class="q-price">
-        <td colspan="${totalColspan}">
-          <div class="price-row-inner">
-            <label>備註金額 NT$</label>
-            <input type="number" id="qTotalPrice" placeholder="0" oninput="calcQMonthly()" value="${(()=>{const e=document.getElementById('qTotalPrice');return e?e.value:'';})()}">
-            <div class="pdiv">|</div>
-            <label>期數</label>
-            <input type="number" id="qMonths" placeholder="24" oninput="calcQMonthly()" style="width:68px" value="${(()=>{const e=document.getElementById('qMonths');return e?e.value:'';})()}">
-            <label>期</label>
-            <div class="monthly-disp">每月 <b id="qMonthlyFee">—</b> 元</div>
-          </div>
-          <div class="price-red" id="qPriceNote"></div>
-        </td>
-      </tr>
     </tfoot>
   </table>`;
 
@@ -1038,16 +1030,15 @@ function renderQPlan(){
       <td><input type="number" value="${p.elec||0}"  min="0" class="qnum" oninput="qPlans[${i}].elec=+this.value;calcQTotals()"></td>
       <td><input type="number" value="${p.magic||0}" min="0" class="qnum" oninput="qPlans[${i}].magic=+this.value;calcQTotals()"></td>
       ${giftCells}
-      <td><input type="number" value="${p.monthly||0}" min="0" class="qnum" style="color:#92400e;width:72px" oninput="qPlans[${i}].monthly=+this.value"></td>
-      <td><input type="number" value="${p.bonusMagic||0}" min="0" class="qnum" style="color:#92400e;width:72px" oninput="qPlans[${i}].bonusMagic=+this.value"></td>
-      <td><input type="number" value="${p.price||0}" min="0" class="qnum" style="color:#9f1239;width:72px" oninput="qPlans[${i}].price=+this.value"></td>
-      <td><input type="number" value="${p.bonusOnePay||0}" min="0" class="qnum" style="color:#9f1239;width:64px" oninput="qPlans[${i}].bonusOnePay=+this.value"></td>
+      <td><input type="number" value="${p.monthly||0}" min="0" class="qnum" style="color:#92400e" oninput="qPlans[${i}].monthly=+this.value"></td>
+      <td><input type="number" value="${p.bonusMagic||0}" min="0" class="qnum" style="color:#92400e" oninput="qPlans[${i}].bonusMagic=+this.value"></td>
+      <td><input type="number" value="${p.price||0}" min="0" class="qnum" style="color:#9f1239" oninput="qPlans[${i}].price=+this.value"></td>
+      <td><input type="number" value="${p.bonusOnePay||0}" min="0" class="qnum" style="color:#9f1239" oninput="qPlans[${i}].bonusOnePay=+this.value"></td>
       <td class="qtd-del"><button onclick="delQPlan(${i})" title="刪除">✕</button></td>`;
     tbody.appendChild(tr);
   });
 
   calcQTotals();
-  calcQMonthly();
 }
 
 function calcQTotals(){
@@ -1086,18 +1077,6 @@ function delQGiftCol(gi){
   renderQPlan();
 }
 
-function calcQMonthly(){
-  const tp = document.getElementById('qTotalPrice');
-  const qm = document.getElementById('qMonths');
-  if(!tp||!qm) return;
-  const total=parseInt(tp.value)||0, months=parseInt(qm.value)||1;
-  const monthly=total>0?Math.round(total/months):0;
-  const mf=document.getElementById('qMonthlyFee');
-  const pn=document.getElementById('qPriceNote');
-  if(mf) mf.textContent=monthly>0?monthly.toLocaleString():'—';
-  if(pn) pn.textContent=total>0?'一次付清 — 再多贈 8 堂 1 對 1 選修課':'';
-}
-
 /* ── 勤學活動（贈送欄也跟著動態） ── */
 function renderQDil(){
   const gc = qGiftCols;
@@ -1112,7 +1091,7 @@ function renderQDil(){
   let rows = '';
   qDils.forEach((d,i)=>{
     while((d.bonuses||[]).length < gc.length) (d.bonuses=d.bonuses||[]).push(0);
-    const total=(d.weekly||0)+(d.bonuses||[]).reduce((a,b)=>a+b,0);
+    const total=(d.bonuses||[]).reduce((a,b)=>a+b,0);
     let bonusCells='';
     gc.forEach((g,gi)=>{
       bonusCells+=`<td class="dn" style="${giftTheme(g.color,'td')}"><input class="di" type="number" value="${(d.bonuses||[])[gi]||0}" min="0" oninput="qDils[${i}].bonuses[${gi}]=+this.value;renderQDil()"></td>`;
@@ -1134,6 +1113,25 @@ function renderQDil(){
   </table>`;
 }
 
+function applyDilTemplate(group){
+  const defs = Q_DIL_DEFAULTS[group];
+  if(!defs) return;
+  if(qDils.length > 0 && !confirm(`套用${group}範本會覆蓋目前的勤學活動，確定嗎？`)) return;
+  qDils = defs.map(d=>({...d, bonuses:[...d.bonuses]}));
+  // 同步贈送欄
+  if(group === 'KIDS' && qGiftCols.length < 2){
+    // KIDS 需要選修課 + 魔法屋兩個贈送欄
+    qGiftCols = [{label:'加贈選修課',color:'elec'},{label:'加贈魔法屋',color:'magic'}];
+    qPlans.forEach(p=>{ while((p.gifts||[]).length < 2)(p.gifts=p.gifts||[]).push(0); });
+    renderQPlan();
+  } else if(group === 'Junior'){
+    qGiftCols = [{label:'加贈選修課',color:'elec'}];
+    qPlans.forEach(p=>{ p.gifts = [(p.gifts||[])[0]||0]; });
+    renderQPlan();
+  }
+  renderQDil();
+}
+
 function addQDil(){
   qDils.push({period:'連續8周',plan:'',weekly:0,bonuses:qGiftCols.map(()=>0)});
   renderQDil();
@@ -1146,7 +1144,7 @@ function resetQuote(){
   if(!confirm('確定要重置報價單？'))return;
   document.getElementById('qStudentName').value='';
   document.getElementById('qRemarks').value='';
-  qGiftCols=[{label:'當月贈送選修課',color:'elec'}];
+  qGiftCols=[{label:'加贈選修課',color:'elec'}];
   qPlans=[];
   qDils=[
     {period:'連續8周',plan:'輕鬆學(以上)',weekly:2,bonuses:[1]},
@@ -1158,7 +1156,7 @@ function resetQuote(){
 
 /* ════════ 初始化 ════════ */
 document.getElementById('monthlyGoal').value=localStorage.getItem('lily_goal')||300000;
-let qGiftCols = [{label:'當月贈送選修課',color:'elec'}];
+let qGiftCols = [{label:'加贈選修課',color:'elec'}];
 let qPlans = [];
 let qDils = [
   {period:'連續8周',plan:'輕鬆學(以上)',weekly:2,bonuses:[1]},
