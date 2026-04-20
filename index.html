@@ -246,6 +246,17 @@ table.dil-table{width:100%;border-collapse:collapse;}
 .btn-sm{padding:6px 12px;font-size:12px;}
 
 /* ══════════════════════════════════════
+   訊息產生器
+══════════════════════════════════════ */
+.msg-section code{font-family:var(--font-en);font-size:11px;}
+.msg-section .form-group label{display:block;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.msg-section .form-group input,.msg-section .form-group textarea{
+  width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text);font-size:13px;font-family:var(--font-tc);outline:none;transition:border-color .2s;
+}
+.msg-section .form-group input:focus,.msg-section .form-group textarea:focus{border-color:var(--accent);background:var(--bg2);}
+
+/* ══════════════════════════════════════
    Context Menu
 ══════════════════════════════════════ */
 .context-menu{position:fixed;background:var(--bg2);border-radius:10px;z-index:6000;display:none;box-shadow:var(--shadow-lg);border:1px solid var(--border);overflow:hidden;min-width:145px;}
@@ -510,6 +521,51 @@ table.dil-table{width:100%;border-collapse:collapse;}
     <div class="q-remarks">
       <div class="q-remarks-label">備註</div>
       <textarea id="qRemarks" placeholder="備註：大夢想家與小夢想家以家庭方案參與勤學活動依照各自帳號分別計算。"></textarea>
+    </div>
+
+    <!-- 訊息產生器 -->
+    <div class="msg-section no-print">
+      <div class="q-sec" style="border-top:1px solid var(--border);border-bottom:none">
+        訊息產生器
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="q-add-btn" onclick="toggleMsgTpl()" id="msgTplToggle">✏️ 編輯模板</button>
+          <button class="q-add-btn" onclick="generateMsg()" style="background:#dcfce7;color:#166534">📋 產生訊息</button>
+        </div>
+      </div>
+
+      <!-- 模板編輯區（預設隱藏） -->
+      <div id="msgTplEditor" style="display:none;padding:14px 22px;border-bottom:1px solid var(--border)">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.6">
+          可用變數：<code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{姓名}</code>
+          <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{方案}</code>
+          <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{月數}</code>
+          <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{月付}</code>
+          <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{總價}</code>
+          <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{一付加贈}</code>
+          <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:11px">{截止日}</code>
+        </div>
+        <div class="form-group" style="margin-bottom:10px">
+          <label>贈送項目（每行一項，會自動產生 • 列表）</label>
+          <textarea id="msgGifts" rows="3" style="font-size:13px" placeholder="課程顧問特別加贈：+5 堂選修課&#10;兒童節加碼：+10 堂選修課"></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:10px">
+          <label>優惠截止日</label>
+          <input type="date" id="msgDeadline">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>訊息模板（每個方案會各產生一段）</label>
+          <textarea id="msgTemplate" rows="16" style="font-size:13px;font-family:var(--font-tc);line-height:1.7"></textarea>
+        </div>
+      </div>
+
+      <!-- 產生結果區 -->
+      <div id="msgOutput" style="display:none;padding:14px 22px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:12px;color:var(--text3);font-weight:600">預覽訊息</div>
+          <button class="q-add-btn" onclick="copyMsg()" id="copyBtn" style="background:#dcfce7;color:#166534">📋 複製全部</button>
+        </div>
+        <div id="msgPreview" style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--text);cursor:text;user-select:all;max-height:500px;overflow-y:auto"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1104,10 +1160,121 @@ function addQDil(){
 }
 function delQDil(i){qDils.splice(i,1);renderQDil();}
 
+/* ════════════════════════════════════════
+   訊息產生器
+════════════════════════════════════════ */
+const DEFAULT_MSG_TPL = `{姓名}媽媽感謝您今天撥冗體驗 ETalking Kids！
+以下是為我們剛剛討論的方案內容
+
+━━ 課程方案 ━━
+方案：{方案}
+合約期間：{月數} 個月
+月付款：NT$ {月付}（{月數}期零利率分期）
+~報名費：全額減免（省 NT$2,888）~
+
+━━ 本次優惠加贈 ━━
+{贈送項目}
+
+━━ 優惠截止日 ━━
+{截止日}
+
+━━ 報名流程 ━━
+① 確認方案與付款方式
+② 填寫學員基本資料
+③ 課程顧問產出合約，線上簽署確認
+④ 刷卡完成，排定首課時間
+
+以上如有任何問題，歡迎隨時聯繫！`;
+
+function initMsgTemplate(){
+  const tpl = document.getElementById('msgTemplate');
+  if(tpl && !tpl.value) tpl.value = DEFAULT_MSG_TPL;
+  // 預設截止日：7天後
+  const dl = document.getElementById('msgDeadline');
+  if(dl && !dl.value){
+    const d = new Date(); d.setDate(d.getDate()+7);
+    dl.value = d.toISOString().split('T')[0];
+  }
+}
+
+function toggleMsgTpl(){
+  const ed = document.getElementById('msgTplEditor');
+  const isHidden = ed.style.display === 'none';
+  ed.style.display = isHidden ? 'block' : 'none';
+  document.getElementById('msgTplToggle').textContent = isHidden ? '✏️ 收起模板' : '✏️ 編輯模板';
+  if(isHidden) initMsgTemplate();
+}
+
+function generateMsg(){
+  initMsgTemplate();
+  const name = document.getElementById('qStudentName').value.trim() || '___';
+  const tpl = document.getElementById('msgTemplate').value;
+  const giftsText = document.getElementById('msgGifts').value.trim();
+  const deadlineRaw = document.getElementById('msgDeadline').value;
+  const deadline = deadlineRaw ? deadlineRaw.replace(/-/g,'/') : '____/____/____';
+
+  if(qPlans.length === 0){
+    alert('請先新增至少一個方案');
+    return;
+  }
+
+  // 贈送項目格式化
+  const giftLines = giftsText
+    ? giftsText.split('\n').filter(l=>l.trim()).map(l=>'• '+l.trim()).join('\n')
+    : '• （請編輯模板填入贈送項目）';
+
+  // 每個方案各產生一段
+  const msgs = qPlans.map(p=>{
+    let msg = tpl;
+    msg = msg.replace(/\{姓名\}/g, name);
+    msg = msg.replace(/\{方案\}/g, p.name || '___');
+    msg = msg.replace(/\{月數\}/g, String(p.months || 24));
+    msg = msg.replace(/\{月付\}/g, (p.monthly||0).toLocaleString());
+    msg = msg.replace(/\{總價\}/g, (p.price||0).toLocaleString());
+    msg = msg.replace(/\{一付加贈\}/g, String(p.bonusOnePay || 0));
+    msg = msg.replace(/\{贈送項目\}/g, giftLines);
+    msg = msg.replace(/\{截止日\}/g, deadline);
+    return msg;
+  });
+
+  const fullMsg = msgs.join('\n\n─────────────────\n\n');
+
+  document.getElementById('msgPreview').textContent = fullMsg;
+  document.getElementById('msgOutput').style.display = 'block';
+
+  // 滾動到預覽區
+  document.getElementById('msgOutput').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function copyMsg(){
+  const text = document.getElementById('msgPreview').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ 已複製！';
+    setTimeout(()=>{ btn.textContent = '📋 複製全部'; }, 2000);
+  }).catch(()=>{
+    // fallback
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('msgPreview'));
+    const sel = window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    document.execCommand('copy');
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ 已複製！';
+    setTimeout(()=>{ btn.textContent = '📋 複製全部'; }, 2000);
+  });
+}
+
 function resetQuote(){
   if(!confirm('確定要重置報價單？'))return;
   document.getElementById('qStudentName').value='';
   document.getElementById('qRemarks').value='';
+  document.getElementById('msgGifts').value='';
+  document.getElementById('msgTemplate').value='';
+  document.getElementById('msgDeadline').value='';
+  document.getElementById('msgOutput').style.display='none';
+  document.getElementById('msgTplEditor').style.display='none';
+  document.getElementById('msgTplToggle').textContent='✏️ 編輯模板';
   qGiftCols=[{label:'加贈選修課',color:'elec'}];
   qPlans=[];
   qDils=[
